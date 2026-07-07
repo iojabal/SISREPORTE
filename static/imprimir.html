@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Imprimir Reportes — UDESTRO</title>
+<style>
+  :root {
+    --verde-oscuro: #1f4d2c; --verde: #2d6a3e; --verde-claro: #e8f3ea;
+    --tierra: #8a6240; --tierra-claro: #f2ebe3;
+    --azul: #2d5a7d; --azul-claro: #e3edf3;
+    --gris-texto: #2b2b28; --gris-borde: #d8d4cc; --fondo: #faf8f4; --blanco: #ffffff;
+  }
+  * { box-sizing: border-box; }
+  body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--fondo); color: var(--gris-texto); margin: 0; }
+
+  header { background: linear-gradient(135deg, var(--verde-oscuro), var(--verde)); color: white; padding: 1.25rem 2rem; display:flex; justify-content: space-between; align-items:center; flex-wrap: wrap; gap: 0.75rem; }
+  header h1 { margin: 0; font-size: 1.3rem; }
+
+  main { max-width: 1500px; margin: 0 auto; padding: 1.5rem 2rem 4rem; }
+
+  .panel-fecha { background: var(--blanco); border: 1px solid var(--gris-borde); border-radius: 8px; padding: 1.25rem 1.5rem; margin-bottom: 1.5rem; display:flex; gap: 1.5rem; flex-wrap: wrap; align-items: end; }
+  .campo { display:flex; flex-direction: column; gap: 0.3rem; }
+  .campo label { font-size: 0.78rem; font-weight: 600; color: var(--verde-oscuro); text-transform: uppercase; letter-spacing: 0.04em; }
+  input { font-family: inherit; font-size: 0.95rem; padding: 0.5rem 0.65rem; border: 1px solid var(--gris-borde); border-radius: 5px; background: var(--fondo); color: var(--gris-texto); }
+
+  .barra-acciones { display:flex; gap:0.75rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
+  button, a.boton { font-family: inherit; font-size:0.9rem; font-weight:600; padding:0.65rem 1.4rem; border-radius:6px; border:none; cursor:pointer; text-decoration:none; display:inline-block; }
+  .btn-primario { background: var(--verde); color:white; }
+  .btn-secundario { background: var(--tierra-claro); color: var(--tierra); }
+
+  .reporte { margin-bottom: 3rem; }
+  .reporte h2 { font-size: 1.1rem; color: var(--verde-oscuro); border-bottom: 2px solid var(--gris-borde); padding-bottom: 0.4rem; }
+  .reporte h3 { font-size: 0.9rem; color: var(--azul); text-transform: uppercase; letter-spacing: 0.02em; margin: 1.25rem 0 0.5rem; }
+
+  table { width:100%; border-collapse: collapse; background: var(--blanco); border:1px solid var(--gris-borde); font-size: 0.8rem; margin-bottom: 0.5rem; }
+  thead th { background: var(--tierra-claro); color: var(--tierra); text-align:center; font-size:0.7rem; font-weight:700; text-transform:uppercase; padding:0.4rem; border-bottom:2px solid var(--gris-borde); }
+  thead th.col-izq { text-align:left; }
+  tbody td { padding:0.4rem; border-bottom:1px solid var(--gris-borde); text-align:center; }
+  tbody tr:nth-child(even) { background:#fbfaf7; }
+  .col-nombre { text-align:left; font-weight:600; color: var(--verde-oscuro); background: var(--verde-claro); white-space: nowrap; }
+  tfoot td, tr.total td, tr.total-general td, tr.subtotal td { font-weight:700; background: var(--tierra-claro); color: var(--tierra); }
+  .vacio { color:#888; font-size:0.85rem; padding: 0.75rem; text-align:center; }
+
+  @media print {
+    header, .barra-acciones { display:none !important; }
+    body { background: white; }
+    main { max-width: none; padding: 0; margin: 0; }
+    .panel-fecha { display:none !important; }
+    table { border: 1px solid #000; font-size: 0.62rem; margin-bottom: 0.3rem; }
+    thead th { background: #eee !important; color:#000; -webkit-print-color-adjust: exact; padding: 0.25rem; }
+    tbody td { padding: 0.22rem; }
+    .col-nombre { background: #eee !important; -webkit-print-color-adjust: exact; }
+    tfoot td, tr.total td, tr.total-general td, tr.subtotal td { background: #ddd !important; -webkit-print-color-adjust: exact; }
+    .reporte { margin-bottom: 0; page-break-after: always; }
+    .reporte:last-child { page-break-after: auto; }
+    .reporte h2 { font-size: 0.95rem; margin: 0 0 0.4rem; padding-bottom: 0.25rem; }
+    .reporte h3 { font-size: 0.75rem; margin: 0.5rem 0 0.25rem; }
+
+    /* Hoja 1 (Reporte de Campamentos — Detalle) en horizontal; el resto en
+       vertical. @page :first solo afecta a la primera página impresa, así
+       que el Reporte 1 debe entrar en una sola hoja para que esto funcione. */
+    @page { size: portrait; margin: 10mm; }
+    @page :first { size: landscape; margin: 10mm; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Imprimir Reportes — UDESTRO</h1>
+  <a class="boton btn-secundario" href="/">← Volver</a>
+</header>
+
+<main>
+  <div class="panel-fecha">
+    <div class="campo">
+      <label for="fecha">Fecha</label>
+      <input type="date" id="fecha">
+    </div>
+  </div>
+
+  <div class="barra-acciones">
+    <button class="btn-primario" onclick="window.print()">Imprimir los 3 reportes</button>
+  </div>
+
+  <div id="contenido">Cargando…</div>
+</main>
+
+<script src="/static/imprimir.js"></script>
+</body>
+</html>

@@ -1,0 +1,19 @@
+[Unit]
+Description=Reporte Diario de Campamentos - UDESTRO
+After=network.target postgresql.service
+
+[Service]
+Type=simple
+User=www-data
+WorkingDirectory=/opt/reporte-campamentos
+Environment="DB_HOST=localhost"
+Environment="DB_PORT=5432"
+Environment="DB_NAME=reporte_campamentos"
+Environment="DB_USER=reportes_app"
+Environment="DB_PASSWORD=CAMBIAR_ESTA_CONTRASEÑA"
+ExecStart=/opt/reporte-campamentos/venv/bin/uvicorn app.main:app --host 0.0.0.0 --port 8000
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

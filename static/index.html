@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reporte Diario de Campamentos — UDESTRO</title>
+<style>
+  :root {
+    --verde-oscuro: #1f4d2c;
+    --verde: #2d6a3e;
+    --verde-claro: #e8f3ea;
+    --tierra: #8a6240;
+    --tierra-claro: #f2ebe3;
+    --gris-texto: #2b2b28;
+    --gris-borde: #d8d4cc;
+    --rojo-alerta: #a83232;
+    --fondo: #faf8f4;
+    --blanco: #ffffff;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: var(--fondo);
+    color: var(--gris-texto);
+    margin: 0;
+    padding: 0;
+  }
+
+  header {
+    background: linear-gradient(135deg, var(--verde-oscuro), var(--verde));
+    color: white;
+    padding: 1.25rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  header h1 {
+    margin: 0;
+    font-size: 1.35rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+  }
+
+  header .subtitulo {
+    font-size: 0.85rem;
+    opacity: 0.85;
+    margin-top: 0.15rem;
+  }
+
+  .acciones-header {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  main {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 1.5rem 2rem 4rem;
+  }
+
+  .panel-fecha {
+    background: var(--blanco);
+    border: 1px solid var(--gris-borde);
+    border-radius: 8px;
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 1.5rem;
+    display: flex;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+    align-items: end;
+  }
+
+  .campo {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+  }
+
+  .campo label {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--verde-oscuro);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  input, select, textarea {
+    font-family: inherit;
+    font-size: 0.95rem;
+    padding: 0.5rem 0.65rem;
+    border: 1px solid var(--gris-borde);
+    border-radius: 5px;
+    background: var(--fondo);
+    color: var(--gris-texto);
+  }
+
+  input:focus, select:focus, textarea:focus {
+    outline: 2px solid var(--verde);
+    outline-offset: 1px;
+  }
+
+  .estado-guardado {
+    font-size: 0.85rem;
+    padding: 0.4rem 0.8rem;
+    border-radius: 5px;
+    display: none;
+  }
+  .estado-guardado.ok { background: var(--verde-claro); color: var(--verde-oscuro); display: inline-block; }
+  .estado-guardado.error { background: #fbe5e5; color: var(--rojo-alerta); display: inline-block; }
+
+  .panel-totales {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    margin-bottom: 1.5rem;
+  }
+  .tarjeta-total {
+    flex: 1;
+    min-width: 180px;
+    background: var(--blanco);
+    border: 1px solid var(--gris-borde);
+    border-left: 4px solid var(--verde-oscuro);
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+  }
+  .tarjeta-total .titulo-total {
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--tierra);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .tarjeta-total .cifras-total {
+    margin-top: 0.35rem;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--verde-oscuro);
+  }
+  .tarjeta-total .sin-registrar {
+    color: #888;
+    font-weight: 500;
+    font-style: italic;
+  }
+
+  .btn-cargar-mas {
+    margin-top: 0.75rem;
+    align-self: flex-start;
+  }
+
+  .tabla-wrap {
+    overflow-x: auto;
+    border: 1px solid var(--gris-borde);
+    border-radius: 8px;
+  }
+
+  table {
+    width: 100%;
+    min-width: 1500px;
+    border-collapse: collapse;
+    background: var(--blanco);
+  }
+
+  thead th {
+    background: var(--tierra-claro);
+    color: var(--tierra);
+    text-align: left;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    padding: 0.6rem 0.5rem;
+    border-bottom: 2px solid var(--gris-borde);
+  }
+
+  tbody td {
+    padding: 0.35rem;
+    border-bottom: 1px solid var(--gris-borde);
+    vertical-align: top;
+  }
+
+  tbody tr:nth-child(even) { background: #fbfaf7; }
+
+  tbody td input, tbody td textarea, tbody td select {
+    width: 100%;
+    border: 1px solid transparent;
+    background: transparent;
+    padding: 0.4rem 0.4rem;
+    font-size: 0.85rem;
+  }
+  tbody td input:hover, tbody td textarea:hover, tbody td select:hover {
+    border-color: var(--gris-borde);
+    background: var(--fondo);
+  }
+  tbody td input:focus, tbody td textarea:focus, tbody td select:focus {
+    border-color: var(--verde);
+    background: white;
+  }
+
+  .col-campamento {
+    font-weight: 700;
+    color: var(--verde-oscuro);
+    white-space: nowrap;
+    background: var(--verde-claro) !important;
+    min-width: 250px;
+  }
+
+  tfoot td {
+    font-weight: 700;
+    background: var(--tierra-claro);
+    color: var(--tierra);
+    padding: 0.5rem;
+    border-top: 2px solid var(--gris-borde);
+  }
+
+  .col-numero { width: 75px; }
+  .col-obs { min-width: 150px; }
+
+  /* Federación / Central / Sindicato / Encargado llevan nombres largos —
+     necesitan suficiente ancho para no verse cortados ni amontonados. */
+  .col-federacion { min-width: 190px; }
+  .col-central, .col-sindicato { min-width: 200px; }
+  .col-encargado { min-width: 180px; }
+
+  .barra-acciones {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: 1.25rem;
+    flex-wrap: wrap;
+  }
+
+  button {
+    font-family: inherit;
+    font-size: 0.9rem;
+    font-weight: 600;
+    padding: 0.65rem 1.4rem;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    transition: filter 0.15s;
+  }
+  button:hover { filter: brightness(0.93); }
+  button:focus-visible { outline: 2px solid var(--verde-oscuro); outline-offset: 2px; }
+
+  .btn-primario { background: var(--verde); color: white; }
+  .btn-secundario { background: var(--tierra-claro); color: var(--tierra); }
+  .btn-fila { background: transparent; color: var(--rojo-alerta); padding: 0.3rem 0.5rem; font-size: 0.8rem; }
+  .solo-pantalla { width: 36px; text-align: center; }
+
+  .historial {
+    margin-top: 2.5rem;
+  }
+  .historial h2 {
+    font-size: 1rem;
+    color: var(--verde-oscuro);
+    border-bottom: 1px solid var(--gris-borde);
+    padding-bottom: 0.5rem;
+  }
+  .lista-historial {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    margin-top: 0.75rem;
+  }
+  .item-historial {
+    display: flex;
+    justify-content: space-between;
+    background: var(--blanco);
+    border: 1px solid var(--gris-borde);
+    border-radius: 6px;
+    padding: 0.6rem 1rem;
+    font-size: 0.88rem;
+    text-decoration: none;
+    color: var(--gris-texto);
+  }
+  .item-historial:hover { border-color: var(--verde); }
+
+  @media (max-width: 800px) {
+    main { padding: 1rem; }
+    table, thead, tbody, th, td, tr { display: block; }
+    thead { display: none; }
+    tbody tr {
+      border: 1px solid var(--gris-borde);
+      border-radius: 6px;
+      margin-bottom: 0.75rem;
+      padding: 0.5rem;
+    }
+    tbody td { border-bottom: none; }
+    tbody td::before {
+      content: attr(data-label);
+      display: block;
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: var(--tierra);
+      text-transform: uppercase;
+    }
+  }
+
+  @media print {
+    header, .barra-acciones, .panel-fecha .estado-guardado, .panel-totales, .historial, .btn-fila, .solo-pantalla { display: none !important; }
+    body { background: white; }
+    .panel-fecha { border: none; padding: 0; margin-bottom: 1rem; }
+    .tabla-wrap { overflow: visible; border: none; }
+    table { border: 1px solid #000; min-width: 0; }
+    thead th { background: #eee !important; color: #000; -webkit-print-color-adjust: exact; }
+    .col-campamento { background: #eee !important; -webkit-print-color-adjust: exact; }
+    tbody td input, tbody td textarea { border: none; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>Reporte Diario de Campamentos 2026</h1>
+    <div class="subtitulo">UDESTRO — Trópico de Cochabamba</div>
+  </div>
+  <div class="acciones-header">
+    <a class="boton btn-secundario" href="/erradicacion" style="text-decoration:none; padding: 0.5rem 1rem; border-radius: 6px; font-weight:600; font-size:0.85rem;">Racionalización y Erradicación</a>
+    <button class="btn-secundario" onclick="window.location.href='#historial-section'">Ver historial</button>
+  </div>
+</header>
+
+<main>
+
+  <div class="panel-fecha">
+    <div class="campo">
+      <label for="fecha">Fecha del reporte</label>
+      <input type="date" id="fecha">
+    </div>
+    <div class="campo" style="flex: 1; min-width: 220px;">
+      <label for="responsable">Responsable</label>
+      <input type="text" id="responsable" placeholder="Nombre del responsable del reporte">
+    </div>
+    <span class="estado-guardado" id="estadoGuardado"></span>
+  </div>
+
+  <div class="panel-totales" id="panelTotales">
+    <div class="tarjeta-total">
+      <div class="titulo-total">Hoy</div>
+      <div class="cifras-total" id="totalDia">—</div>
+    </div>
+    <div class="tarjeta-total">
+      <div class="titulo-total">Mes</div>
+      <div class="cifras-total" id="totalMes">—</div>
+    </div>
+    <div class="tarjeta-total">
+      <div class="titulo-total">Año</div>
+      <div class="cifras-total" id="totalAnio">—</div>
+    </div>
+  </div>
+
+  <div class="tabla-wrap">
+  <table id="tablaCampamentos">
+    <thead>
+      <tr>
+        <th class="col-campamento">Camp.</th>
+        <th class="col-federacion">Federación</th>
+        <th class="col-central">Central</th>
+        <th class="col-sindicato">Sindicato</th>
+        <th class="col-numero">E (Has.)</th>
+        <th class="col-numero">Total E (Has.)</th>
+        <th class="col-numero">M (Has.)</th>
+        <th class="col-numero">Total M (Has.)</th>
+        <th class="col-numero">Alm.</th>
+        <th class="col-numero">Errad.</th>
+        <th class="col-numero">Lotes</th>
+        <th class="col-numero">Parcelas</th>
+        <th class="col-encargado">Encargado Camp.</th>
+        <th class="col-obs">Observaciones</th>
+        <th class="solo-pantalla"></th>
+      </tr>
+    </thead>
+    <tbody id="cuerpoTabla">
+      <!-- filas generadas por JS -->
+    </tbody>
+    <tfoot id="pieTabla"></tfoot>
+  </table>
+  </div>
+
+  <div class="barra-acciones">
+    <button class="btn-secundario" onclick="agregarFilaCampamento()">+ Agregar fila</button>
+    <button class="btn-primario" onclick="guardarReporte()">Guardar reporte</button>
+    <button class="btn-secundario" onclick="window.open('/imprimir?fecha=' + inputFecha.value, '_blank')">Imprimir</button>
+  </div>
+
+  <div class="historial" id="historial-section">
+    <h2>Reportes recientes</h2>
+    <div class="lista-historial" id="listaHistorial">
+      <p style="color:#888; font-size:0.85rem;">Cargando…</p>
+    </div>
+    <button class="btn-secundario btn-cargar-mas" id="btnCargarMas" style="display:none;" onclick="cargarMasHistorial()">Cargar más</button>
+  </div>
+
+</main>
+
+<script src="/static/app.js?v=5"></script>
+</body>
+</html>

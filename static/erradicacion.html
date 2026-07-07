@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Racionalización y Erradicación — UDESTRO</title>
+<style>
+  :root {
+    --verde-oscuro: #1f4d2c;
+    --verde: #2d6a3e;
+    --verde-claro: #e8f3ea;
+    --tierra: #8a6240;
+    --tierra-claro: #f2ebe3;
+    --azul: #2d5a7d;
+    --azul-claro: #e3edf3;
+    --gris-texto: #2b2b28;
+    --gris-borde: #d8d4cc;
+    --rojo-alerta: #a83232;
+    --fondo: #faf8f4;
+    --blanco: #ffffff;
+  }
+  * { box-sizing: border-box; }
+  body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--fondo); color: var(--gris-texto); margin: 0; }
+
+  header { background: linear-gradient(135deg, var(--verde-oscuro), var(--verde)); color: white; padding: 1.25rem 2rem; display:flex; justify-content: space-between; align-items:center; flex-wrap: wrap; gap: 0.75rem; }
+  header h1 { margin: 0; font-size: 1.3rem; }
+  header .subtitulo { font-size: 0.85rem; opacity: 0.85; margin-top: 0.15rem; }
+
+  main { max-width: 1500px; margin: 0 auto; padding: 1.5rem 2rem 4rem; }
+
+  .nota-derivado { background: var(--azul-claro); color: var(--azul); border-radius: 6px; padding: 0.7rem 1rem; font-size: 0.82rem; margin-bottom: 1.25rem; }
+
+  .panel-fecha { background: var(--blanco); border: 1px solid var(--gris-borde); border-radius: 8px; padding: 1.25rem 1.5rem; margin-bottom: 1.5rem; display:flex; gap: 1.5rem; flex-wrap: wrap; align-items: end; }
+  .campo { display:flex; flex-direction: column; gap: 0.3rem; }
+  .campo label { font-size: 0.78rem; font-weight: 600; color: var(--verde-oscuro); text-transform: uppercase; letter-spacing: 0.04em; }
+  input { font-family: inherit; font-size: 0.95rem; padding: 0.5rem 0.65rem; border: 1px solid var(--gris-borde); border-radius: 5px; background: var(--fondo); color: var(--gris-texto); }
+
+  .pestañas { display:flex; gap: 0.5rem; margin-bottom: 1.25rem; }
+  .pestaña { padding: 0.55rem 1.2rem; border-radius: 6px 6px 0 0; background: var(--tierra-claro); color: var(--tierra); font-weight: 600; font-size: 0.88rem; cursor: pointer; border: none; }
+  .pestaña.activa { background: var(--verde); color: white; }
+
+  .vista { display: none; }
+  .vista.activa { display: block; }
+
+  .bloque { margin-bottom: 2rem; }
+  .bloque h2 { font-size: 0.95rem; color: var(--azul); text-transform: uppercase; letter-spacing: 0.03em; margin-bottom: 0.6rem; }
+
+  table { width:100%; border-collapse: collapse; background: var(--blanco); border:1px solid var(--gris-borde); border-radius:8px; overflow:hidden; font-size: 0.85rem; }
+  thead th { background: var(--azul-claro); color: var(--azul); text-align:center; font-size:0.72rem; font-weight:700; text-transform:uppercase; letter-spacing:0.02em; padding:0.5rem 0.4rem; border-bottom:2px solid var(--gris-borde); }
+  thead th.col-nombre { text-align:left; }
+  tbody td { padding:0.45rem; border-bottom:1px solid var(--gris-borde); text-align: center; }
+  tbody tr:nth-child(even) { background:#fbfaf7; }
+  .col-nombre { text-align:left; font-weight:600; color: var(--verde-oscuro); background: var(--verde-claro); white-space: nowrap; }
+  .col-historico { color: #888; }
+
+  tr.subtotal td { background: var(--tierra-claro) !important; font-weight: 700; color: var(--tierra); }
+  tr.total-general td { background: var(--verde-claro) !important; font-weight: 700; color: var(--verde-oscuro); }
+
+  .vacio { color:#888; font-size:0.85rem; padding: 1rem; text-align:center; }
+
+  .barra-acciones { display:flex; gap:0.75rem; margin-top: 1.25rem; flex-wrap: wrap; }
+  button, a.boton { font-family: inherit; font-size:0.9rem; font-weight:600; padding:0.65rem 1.4rem; border-radius:6px; border:none; cursor:pointer; text-decoration:none; display:inline-block; }
+  button:hover, a.boton:hover { filter: brightness(0.93); }
+  .btn-secundario { background: var(--tierra-claro); color: var(--tierra); }
+
+  @media print {
+    header, .barra-acciones, .pestañas, .nota-derivado { display:none !important; }
+    .vista { display: block !important; }
+    body { background: white; }
+    table { border: 1px solid #000; font-size: 0.75rem; }
+    thead th { background: #eee !important; -webkit-print-color-adjust: exact; }
+    .col-nombre { background: #eee !important; -webkit-print-color-adjust: exact; }
+    tr.subtotal td, tr.total-general td { background: #ddd !important; -webkit-print-color-adjust: exact; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>Racionalización y Erradicación</h1>
+    <div class="subtitulo">"UDESTRO" — Trópico de Cochabamba</div>
+  </div>
+  <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
+    <a class="boton btn-secundario" href="/">← Reporte de Campamentos</a>
+    <a class="boton btn-secundario" href="/zonas">Por Zona y Departamento →</a>
+  </div>
+</header>
+
+<main>
+
+  <div class="nota-derivado">
+    Esta vista no es captura manual: se calcula automáticamente a partir de los datos ya ingresados en el Reporte de Campamentos del día seleccionado.
+  </div>
+
+  <div class="panel-fecha">
+    <div class="campo">
+      <label for="fecha">Fecha</label>
+      <input type="date" id="fecha">
+    </div>
+  </div>
+
+  <div class="pestañas">
+    <button class="pestaña activa" data-vista="vista-federacion">Por Federación</button>
+    <button class="pestaña" data-vista="vista-areas">Área Legal y Parques</button>
+  </div>
+
+  <!-- VISTA 1: Por Federación -->
+  <div class="vista activa" id="vista-federacion">
+    <table>
+      <thead>
+        <tr>
+          <th class="col-nombre">Federación</th>
+          <th>E&lt; (Erradicada)</th>
+          <th>M&lt; (Mensura)</th>
+          <th>T (Total)</th>
+          <th>Alm.</th>
+          <th>Errad.</th>
+          <th>Lotes</th>
+          <th>Parcelas</th>
+        </tr>
+      </thead>
+      <tbody id="cuerpoFederacion"></tbody>
+    </table>
+  </div>
+
+  <!-- VISTA 2: Área Legal y Parques -->
+  <div class="vista" id="vista-areas">
+
+    <div class="bloque">
+      <h2>Área Legal</h2>
+      <table>
+        <thead>
+          <tr>
+            <th class="col-nombre">Federación</th>
+            <th>Erradicada día (Has.)</th>
+            <th>Total erradicada año</th>
+            <th>Mensura día (Has.)</th>
+            <th>Total mensura año</th>
+            <th>Alm. día (m2.)</th>
+            <th>Total alm. año</th>
+          </tr>
+        </thead>
+        <tbody id="cuerpoAreaLegal"></tbody>
+      </table>
+    </div>
+
+    <div class="bloque">
+      <h2>Parques Nal. y Áreas Ilegales CBBA-LP-BENI</h2>
+      <table>
+        <thead>
+          <tr>
+            <th class="col-nombre">Área</th>
+            <th>Erradicada día (Has.)</th>
+            <th>Total erradicada año</th>
+            <th>Alm. día (m2.)</th>
+            <th>Total alm. año</th>
+          </tr>
+        </thead>
+        <tbody id="cuerpoParqueCbba"></tbody>
+      </table>
+    </div>
+
+    <div class="bloque">
+      <h2>Parques Nal. y Áreas Ilegales Santa Cruz</h2>
+      <table>
+        <thead>
+          <tr>
+            <th class="col-nombre">Área</th>
+            <th>Erradicada día (Has.)</th>
+            <th>Total erradicada año</th>
+            <th>Alm. día (m2.)</th>
+            <th>Total alm. año</th>
+          </tr>
+        </thead>
+        <tbody id="cuerpoParqueSantaCruz"></tbody>
+      </table>
+    </div>
+
+  </div>
+
+  <div class="bloque">
+    <h2>Total General</h2>
+    <table>
+      <thead>
+        <tr>
+          <th class="col-nombre"></th>
+          <th>Err. día (Has.)</th>
+          <th>Tot. err. año</th>
+          <th>Men. día (Has.)</th>
+          <th>Tot. men. año</th>
+          <th>Lot. día</th>
+          <th>Tot. lot. año</th>
+          <th>Pol. día</th>
+          <th>Tot. pol. año</th>
+          <th>Alm. día (m2.)</th>
+          <th>Tot. alm. año (m2.)</th>
+        </tr>
+      </thead>
+      <tbody id="cuerpoTotalGeneral"></tbody>
+    </table>
+  </div>
+
+  <div class="barra-acciones">
+    <button class="btn-secundario" onclick="window.open('/imprimir?fecha=' + document.getElementById('fecha').value, '_blank')">Imprimir</button>
+  </div>
+
+</main>
+
+<script src="/static/erradicacion.js?v=2"></script>
+</body>
+</html>

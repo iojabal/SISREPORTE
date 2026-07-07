@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reporte de Campamentos — Detalle</title>
+<style>
+  :root {
+    --verde-oscuro: #1f4d2c;
+    --verde: #2d6a3e;
+    --verde-claro: #e8f3ea;
+    --tierra: #8a6240;
+    --tierra-claro: #f2ebe3;
+    --gris-texto: #2b2b28;
+    --gris-borde: #d8d4cc;
+    --fondo: #faf8f4;
+    --blanco: #ffffff;
+  }
+  * { box-sizing: border-box; }
+  body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--fondo); color: var(--gris-texto); margin: 0; }
+  header { background: linear-gradient(135deg, var(--verde-oscuro), var(--verde)); color: white; padding: 1.25rem 2rem; display:flex; justify-content: space-between; align-items:center; flex-wrap: wrap; gap: 0.75rem; }
+  header h1 { margin: 0; font-size: 1.3rem; }
+  main { max-width: 1400px; margin: 0 auto; padding: 1.5rem 2rem 4rem; }
+  .meta { background: var(--blanco); border: 1px solid var(--gris-borde); border-radius: 8px; padding: 1rem 1.5rem; margin-bottom: 1.25rem; display:flex; gap:2rem; flex-wrap: wrap; }
+  .meta div span { display:block; font-size:0.75rem; text-transform: uppercase; color: var(--tierra); font-weight:700; letter-spacing:0.03em; }
+  table { width:100%; border-collapse: collapse; background: var(--blanco); border:1px solid var(--gris-borde); border-radius:8px; overflow:hidden; }
+  thead th { background: var(--tierra-claro); color: var(--tierra); text-align:left; font-size:0.75rem; font-weight:700; text-transform:uppercase; letter-spacing:0.03em; padding:0.6rem 0.5rem; border-bottom:2px solid var(--gris-borde); }
+  tbody td { padding:0.5rem; border-bottom:1px solid var(--gris-borde); }
+  tbody tr:nth-child(even) { background:#fbfaf7; }
+  .col-campamento { font-weight:700; color: var(--verde-oscuro); background: var(--verde-claro); }
+  tfoot td { font-weight:700; background: var(--tierra-claro); color: var(--tierra); padding:0.5rem; border-top:2px solid var(--gris-borde); }
+  .barra-acciones { display:flex; gap:0.75rem; margin-top:1.25rem; }
+  button, a.boton { font-family: inherit; font-size:0.9rem; font-weight:600; padding:0.65rem 1.4rem; border-radius:6px; border:none; cursor:pointer; text-decoration:none; display:inline-block; }
+  .btn-primario { background: var(--verde); color:white; }
+  .btn-secundario { background: var(--tierra-claro); color: var(--tierra); }
+  @media print { header, .barra-acciones { display:none !important; } }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Reporte de Campamentos — Detalle</h1>
+  <a class="boton btn-secundario" href="/">← Volver</a>
+</header>
+
+<main>
+  <div class="meta" id="meta">Cargando…</div>
+  <table>
+    <thead>
+      <tr>
+        <th>Camp.</th>
+        <th>Federación</th>
+        <th>Central</th>
+        <th>Sindicato</th>
+        <th>E (Has.)</th>
+        <th>Total E (Has.)</th>
+        <th>M (Has.)</th>
+        <th>Total M (Has.)</th>
+        <th>Alm.</th>
+        <th>Errad.</th>
+        <th>Lotes</th>
+        <th>Parcelas</th>
+        <th>Encargado Camp.</th>
+        <th>Observaciones</th>
+      </tr>
+    </thead>
+    <tbody id="cuerpo"></tbody>
+    <tfoot id="pie"></tfoot>
+  </table>
+
+  <div class="barra-acciones">
+    <button class="btn-primario" onclick="window.open('/imprimir?fecha=' + fechaActual, '_blank')">Imprimir</button>
+  </div>
+</main>
+
+<script>
+const reporteId = window.location.pathname.split('/').pop();
+let fechaActual = '';
+
+async function cargar() {
+  try {
+    const resp = await fetch(`/api/reportes/${reporteId}`);
+    if (!resp.ok) throw new Error('Reporte no encontrado');
+    const r = await resp.json();
+    fechaActual = r.fecha;
+
+    const fecha = new Date(r.fecha).toLocaleDateString('es-BO', { day: '2-digit', month: 'long', year: 'numeric' });
+    document.getElementById('meta').innerHTML = `
+      <div><span>Fecha</span>${fecha}</div>
+      <div><span>Responsable</span>${r.responsable || '—'}</div>
+    `;
+
+    const cuerpo = document.getElementById('cuerpo');
+    cuerpo.innerHTML = '';
+    const totales = { erradicado: 0, total_erradicado: 0, mensura: 0, total_mensura: 0, alm: 0, errad: 0, lotes: 0, parcelas: 0 };
+    r.detalles.forEach(d => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td class="col-campamento">${d.campamento}</td>
+        <td>${d.federacion || ''}</td>
+        <td>${d.central || ''}</td>
+        <td>${d.sindicato || ''}</td>
+        <td>${d.erradicado ?? ''}</td>
+        <td>${d.total_erradicado ?? ''}</td>
+        <td>${d.mensura ?? ''}</td>
+        <td>${d.total_mensura ?? ''}</td>
+        <td>${d.alm ?? ''}</td>
+        <td>${d.errad ?? ''}</td>
+        <td>${d.lotes ?? ''}</td>
+        <td>${d.parcelas ?? ''}</td>
+        <td>${d.encargado_camp || ''}</td>
+        <td>${d.observaciones || ''}</td>
+      `;
+      cuerpo.appendChild(tr);
+      for (const campo of Object.keys(totales)) {
+        totales[campo] += Number(d[campo]) || 0;
+      }
+    });
+
+    const pie = document.getElementById('pie');
+    pie.innerHTML = `
+      <tr>
+        <td colspan="4">TOTAL</td>
+        <td>${totales.erradicado || ''}</td>
+        <td>${totales.total_erradicado || ''}</td>
+        <td>${totales.mensura || ''}</td>
+        <td>${totales.total_mensura || ''}</td>
+        <td>${totales.alm || ''}</td>
+        <td>${totales.errad || ''}</td>
+        <td>${totales.lotes || ''}</td>
+        <td>${totales.parcelas || ''}</td>
+        <td colspan="2"></td>
+      </tr>
+    `;
+  } catch (err) {
+    document.getElementById('meta').textContent = 'No se pudo cargar el reporte.';
+  }
+}
+
+cargar();
+</script>
+</body>
+</html>
