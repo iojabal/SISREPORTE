@@ -29,15 +29,6 @@ function formatearNum(valor) {
   });
 }
 
-function nombreCorto(nombre) {
-  return nombre
-    .replace('ROJO ', 'R')
-    .replace('C.SOCIAL ', 'C.S ')
-    .replace('AMARILLO ', 'A ')
-    .replace('VERDE ', 'V ')
-    .replace('AZUL ', 'A ');
-}
-
 async function cargarCampamentos() {
   try {
     const resp = await fetch('/api/campamentos');
@@ -46,7 +37,7 @@ async function cargarCampamentos() {
 
     campamentosGrid.innerHTML = campamentos.map(c => `
       <button class="campamento-btn" data-id="${c.id}" title="${c.nombre}">
-        ${nombreCorto(c.nombre)}
+        ${c.nombre}
       </button>
     `).join('');
 
