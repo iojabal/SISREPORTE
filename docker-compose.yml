@@ -1,3 +1,10 @@
+# Nombre de proyecto fijo: Docker Compose por defecto nombra los volúmenes
+# según el nombre de la carpeta contenedora. Si esta carpeta se renombra o se
+# vuelve a clonar en otro path (ej. de "reporte-campamentos" a "SISREPORTE"),
+# sin esto Compose crearía un volumen NUEVO y vacío en vez de reutilizar el
+# que ya tiene los datos reales.
+name: reporte-campamentos
+
 services:
 
   nginx:
