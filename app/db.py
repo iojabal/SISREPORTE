@@ -127,15 +127,29 @@ def obtener_reporte(reporte_id: int):
             return cabecera
 
 
-def listar_reportes(limite: int = 50):
+def listar_reportes(limite: int = 50, fecha_inicio: Optional[date] = None, fecha_fin: Optional[date] = None):
+    filtros = []
+    params = []
+
+    if fecha_inicio is not None:
+        filtros.append("fecha >= %s")
+        params.append(fecha_inicio)
+    if fecha_fin is not None:
+        filtros.append("fecha <= %s")
+        params.append(fecha_fin)
+
+    where = f"WHERE {' AND '.join(filtros)}" if filtros else ""
+    params.append(limite)
+
     with get_connection() as conn:
         with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cursor:
             cursor.execute(
-                """SELECT id, fecha, responsable, fecha_creacion
+                f"""SELECT id, fecha, responsable, fecha_creacion
                    FROM reporte_campamentos_cabecera
+                   {where}
                    ORDER BY fecha DESC, id DESC
                    LIMIT %s""",
-                (limite,)
+                params
             )
             return [dict(row) for row in cursor.fetchall()]
 

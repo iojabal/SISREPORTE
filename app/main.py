@@ -69,8 +69,10 @@ def api_eliminar_campamento(campamento_id: int):
 # ============================================================
 
 @app.get("/api/reportes")
-def api_listar_reportes(limite: int = 50):
-    return db.listar_reportes(limite)
+def api_listar_reportes(limite: int = 50, fecha_inicio: date | None = None, fecha_fin: date | None = None):
+    if fecha_inicio and fecha_fin and fecha_fin < fecha_inicio:
+        raise HTTPException(status_code=400, detail="La fecha final no puede ser menor que la fecha inicial")
+    return db.listar_reportes(limite, fecha_inicio, fecha_fin)
 
 
 @app.get("/api/totales-resumen/{fecha}")

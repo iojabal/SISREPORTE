@@ -289,11 +289,21 @@ inputFecha.addEventListener('change', cargarTotalesResumen);
 // Historial
 // ============================================================
 const btnCargarMas = document.getElementById('btnCargarMas');
+const historialFechaInicio = document.getElementById('historialFechaInicio');
+const historialFechaFin = document.getElementById('historialFechaFin');
 let historialLimite = 20;
 
 async function cargarHistorial() {
   try {
-    const resp = await fetch(`/api/reportes?limite=${historialLimite}`);
+    const params = new URLSearchParams({ limite: historialLimite });
+    if (historialFechaInicio && historialFechaInicio.value) {
+      params.set('fecha_inicio', historialFechaInicio.value);
+    }
+    if (historialFechaFin && historialFechaFin.value) {
+      params.set('fecha_fin', historialFechaFin.value);
+    }
+
+    const resp = await fetch(`/api/reportes?${params.toString()}`);
     if (!resp.ok) throw new Error();
     const reportes = await resp.json();
 
@@ -322,6 +332,24 @@ async function cargarHistorial() {
 
 function cargarMasHistorial() {
   historialLimite += 20;
+  cargarHistorial();
+}
+
+function filtrarHistorial() {
+  if (historialFechaInicio.value && historialFechaFin.value && historialFechaFin.value < historialFechaInicio.value) {
+    listaHistorial.innerHTML = '<p style="color:#a83232; font-size:0.85rem;">La fecha final no puede ser menor que la fecha inicial.</p>';
+    btnCargarMas.style.display = 'none';
+    return;
+  }
+
+  historialLimite = 20;
+  cargarHistorial();
+}
+
+function limpiarFiltroHistorial() {
+  historialFechaInicio.value = '';
+  historialFechaFin.value = '';
+  historialLimite = 20;
   cargarHistorial();
 }
 

@@ -260,6 +260,20 @@
     border-bottom: 1px solid var(--gris-borde);
     padding-bottom: 0.5rem;
   }
+  .filtros-historial {
+    align-items: end;
+    background: var(--blanco);
+    border: 1px solid var(--gris-borde);
+    border-radius: 8px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 0.9rem;
+    padding: 1rem;
+  }
+  .filtros-historial .campo {
+    min-width: 160px;
+  }
   .lista-historial {
     display: flex;
     flex-direction: column;
@@ -391,6 +405,18 @@
 
   <div class="historial" id="historial-section">
     <h2>Reportes recientes</h2>
+    <div class="filtros-historial">
+      <div class="campo">
+        <label for="historialFechaInicio">Desde</label>
+        <input type="date" id="historialFechaInicio">
+      </div>
+      <div class="campo">
+        <label for="historialFechaFin">Hasta</label>
+        <input type="date" id="historialFechaFin">
+      </div>
+      <button class="btn-secundario" type="button" onclick="filtrarHistorial()">Filtrar</button>
+      <button class="btn-secundario" type="button" onclick="limpiarFiltroHistorial()">Limpiar</button>
+    </div>
     <div class="lista-historial" id="listaHistorial">
       <p style="color:#888; font-size:0.85rem;">Cargando…</p>
     </div>
