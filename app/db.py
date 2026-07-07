@@ -141,10 +141,13 @@ def listar_reportes(limite: int = 50):
 
 
 def obtener_totales_resumen(fecha: date):
-    """Totales de erradicado/mensura: del día seleccionado, del mes en curso
-    y del año en curso (acumulado hasta hoy). Para el día se distingue
+    """Totales de erradicado/mensura: del día seleccionado, del mes y del año
+    de ESA MISMA fecha (no la fecha real del servidor) — así "Mes" y "Año"
+    quedan consistentes con lo que se está viendo en "Hoy". "Hasta la fecha"
+    se calcula respecto a la fecha seleccionada, no a CURRENT_DATE, para que
+    ver un reporte de un mes/año pasado no muestre acumulados de meses
+    futuros dentro de ese mismo período. Para el día se distingue
     "no hay reporte guardado" de "reporte con total 0"."""
-    hoy = date.today()
     suma_sql = """SELECT
                       SUM(COALESCE(d.erradicado, 0)) AS erradicado,
                       SUM(COALESCE(d.mensura, 0)) AS mensura
@@ -162,20 +165,18 @@ def obtener_totales_resumen(fecha: date):
             cursor.execute(suma_sql + "c.fecha = %s", (fecha,))
             dia = dict(cursor.fetchone())
 
-            # fecha <= CURRENT_DATE excluye reportes con fecha futura (p. ej.
-            # guardados por error o para pruebas): mes y año son "hasta hoy".
             cursor.execute(
                 suma_sql + """EXTRACT(YEAR FROM c.fecha) = %s
                      AND EXTRACT(MONTH FROM c.fecha) = %s
-                     AND c.fecha <= CURRENT_DATE""",
-                (hoy.year, hoy.month)
+                     AND c.fecha <= %s""",
+                (fecha.year, fecha.month, fecha)
             )
             mes = dict(cursor.fetchone())
 
             cursor.execute(
                 suma_sql + """EXTRACT(YEAR FROM c.fecha) = %s
-                     AND c.fecha <= CURRENT_DATE""",
-                (hoy.year,)
+                     AND c.fecha <= %s""",
+                (fecha.year, fecha)
             )
             anio = dict(cursor.fetchone())
 
