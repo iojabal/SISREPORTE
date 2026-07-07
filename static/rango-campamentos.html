@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rango por Campamento - UDESTRO</title>
+<style>
+  :root {
+    --verde-oscuro: #1f4d2c;
+    --verde: #2d6a3e;
+    --verde-claro: #e8f3ea;
+    --tierra: #8a6240;
+    --tierra-claro: #f2ebe3;
+    --gris-texto: #2b2b28;
+    --gris-borde: #d8d4cc;
+    --fondo: #faf8f4;
+    --blanco: #ffffff;
+    --azul: #2d5a7d;
+    --azul-claro: #e3edf3;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--fondo);
+    color: var(--gris-texto);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+
+  header {
+    background: linear-gradient(135deg, var(--verde-oscuro), var(--verde));
+    color: white;
+    padding: 1.25rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+  }
+
+  h1 {
+    margin: 0;
+    font-size: 1.3rem;
+    font-weight: 600;
+  }
+
+  .subtitulo {
+    margin-top: 0.15rem;
+    font-size: 0.85rem;
+    opacity: 0.85;
+  }
+
+  .acciones-header {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  a.boton,
+  button {
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 0.88rem;
+    font-weight: 600;
+    padding: 0.6rem 1rem;
+    text-decoration: none;
+  }
+
+  .btn-secundario {
+    background: var(--tierra-claro);
+    color: var(--tierra);
+  }
+
+  .btn-primario {
+    background: var(--verde);
+    color: white;
+  }
+
+  main {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 1.5rem 2rem 4rem;
+  }
+
+  .panel-filtros {
+    background: var(--blanco);
+    border: 1px solid var(--gris-borde);
+    border-radius: 8px;
+    padding: 1.25rem 1.5rem;
+    display: flex;
+    align-items: end;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .campo {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+  }
+
+  label {
+    color: var(--verde-oscuro);
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  input {
+    background: var(--fondo);
+    border: 1px solid var(--gris-borde);
+    border-radius: 5px;
+    color: var(--gris-texto);
+    font-family: inherit;
+    font-size: 0.95rem;
+    padding: 0.5rem 0.65rem;
+  }
+
+  .campamentos {
+    background: var(--blanco);
+    border: 1px solid var(--gris-borde);
+    border-radius: 8px;
+    margin: 1rem 0;
+    padding: 1rem;
+  }
+
+  .campamentos-titulo {
+    color: var(--verde-oscuro);
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    margin-bottom: 0.75rem;
+    text-transform: uppercase;
+  }
+
+  .campamento-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(82px, 1fr));
+    gap: 0.5rem;
+  }
+
+  .campamento-btn {
+    background: var(--azul-claro);
+    border: 1px solid #b8cedc;
+    color: var(--azul);
+    padding: 0.55rem 0.35rem;
+    min-height: 38px;
+  }
+
+  .campamento-btn.activo {
+    background: var(--verde);
+    border-color: var(--verde-oscuro);
+    color: white;
+  }
+
+  .estado {
+    color: #666;
+    font-size: 0.88rem;
+    margin: 0.75rem 0;
+    min-height: 1.2rem;
+  }
+
+  .tabla-wrap {
+    background: var(--blanco);
+    border: 1px solid var(--gris-borde);
+    border-radius: 8px;
+    overflow-x: auto;
+  }
+
+  table {
+    border-collapse: collapse;
+    min-width: 520px;
+    width: 100%;
+  }
+
+  th {
+    background: var(--tierra-claro);
+    border-bottom: 2px solid var(--gris-borde);
+    color: var(--tierra);
+    font-size: 0.76rem;
+    letter-spacing: 0.03em;
+    padding: 0.6rem 0.5rem;
+    text-align: left;
+    text-transform: uppercase;
+  }
+
+  td {
+    border-bottom: 1px solid var(--gris-borde);
+    padding: 0.5rem;
+  }
+
+  tbody tr:nth-child(even) { background: #fbfaf7; }
+
+  .col-nombre {
+    background: var(--verde-claro);
+    color: var(--verde-oscuro);
+    font-weight: 700;
+    white-space: nowrap;
+  }
+
+  .col-numero {
+    text-align: right;
+  }
+
+  tfoot td {
+    background: var(--tierra-claro);
+    color: var(--tierra);
+    font-weight: 700;
+    border-top: 2px solid var(--gris-borde);
+  }
+
+  .vacio {
+    color: #777;
+    padding: 1rem;
+    text-align: center;
+  }
+
+  @media (max-width: 720px) {
+    main { padding: 1rem; }
+    header { padding: 1rem; }
+    .panel-filtros { align-items: stretch; }
+    .campo, .panel-filtros button { width: 100%; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>Rango por Campamento</h1>
+    <div class="subtitulo">Consulta de erradicada y mensura por fechas</div>
+  </div>
+  <div class="acciones-header">
+    <a class="boton btn-secundario" href="/">Reporte Diario</a>
+    <a class="boton btn-secundario" href="/erradicacion">Racionalizacion y Erradicacion</a>
+  </div>
+</header>
+
+<main>
+  <section class="panel-filtros">
+    <div class="campo">
+      <label for="fechaInicio">Fecha inicio</label>
+      <input type="date" id="fechaInicio">
+    </div>
+    <div class="campo">
+      <label for="fechaFin">Fecha fin</label>
+      <input type="date" id="fechaFin">
+    </div>
+    <button class="btn-primario" id="btnConsultar">Consultar</button>
+  </section>
+
+  <section class="campamentos">
+    <div class="campamentos-titulo">Campamento</div>
+    <div class="campamento-grid" id="campamentosGrid"></div>
+  </section>
+
+  <div class="estado" id="estado"></div>
+
+  <section class="tabla-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Campamento</th>
+          <th>Fecha</th>
+          <th class="col-numero">Erradicada</th>
+          <th class="col-numero">Mensura</th>
+        </tr>
+      </thead>
+      <tbody id="cuerpoTabla">
+        <tr><td colspan="4" class="vacio">Seleccione un rango y un campamento.</td></tr>
+      </tbody>
+      <tfoot id="pieTabla"></tfoot>
+    </table>
+  </section>
+</main>
+
+<script src="/static/rango-campamentos.js?v=1"></script>
+</body>
+</html>

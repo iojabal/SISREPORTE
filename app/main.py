@@ -78,6 +78,13 @@ def api_totales_resumen(fecha: date):
     return db.obtener_totales_resumen(fecha)
 
 
+@app.get("/api/resumen-campamento-rango")
+def api_resumen_campamento_rango(fecha_inicio: date, fecha_fin: date, campamento_id: int | None = None):
+    if fecha_fin < fecha_inicio:
+        raise HTTPException(status_code=400, detail="La fecha final no puede ser menor que la fecha inicial")
+    return db.obtener_resumen_campamento_rango(fecha_inicio, fecha_fin, campamento_id)
+
+
 @app.get("/api/reportes/{reporte_id}")
 def api_obtener_reporte(reporte_id: int):
     reporte = db.obtener_reporte(reporte_id)
@@ -210,6 +217,11 @@ def erradicacion_html():
 @app.get("/zonas")
 def zonas_html():
     return FileResponse("static/zonas.html")
+
+
+@app.get("/rango-campamentos")
+def rango_campamentos_html():
+    return FileResponse("static/rango-campamentos.html")
 
 
 @app.get("/imprimir")

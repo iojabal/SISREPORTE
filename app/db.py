@@ -197,6 +197,60 @@ def obtener_totales_resumen(fecha: date):
     }
 
 
+def obtener_resumen_campamento_rango(fecha_inicio: date, fecha_fin: date, campamento_id: Optional[int] = None):
+    """Devuelve el detalle por fecha/campamento dentro de un rango.
+
+    Si campamento_id viene vacío, se devuelven todos los campamentos con datos
+    en el rango. Si viene con valor, se filtra solo ese campamento.
+    """
+    params = [fecha_inicio, fecha_fin]
+    filtro_campamento = ""
+    if campamento_id is not None:
+        filtro_campamento = " AND d.campamento_id = %s"
+        params.append(campamento_id)
+
+    with get_connection() as conn:
+        with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cursor:
+            cursor.execute(
+                f"""SELECT
+                       c.nombre AS campamento,
+                       cab.fecha,
+                       SUM(COALESCE(d.erradicado, 0)) AS erradicada,
+                       SUM(COALESCE(d.mensura, 0)) AS mensura
+                   FROM reporte_campamentos_detalle d
+                   JOIN reporte_campamentos_cabecera cab ON cab.id = d.reporte_id
+                   JOIN campamentos c ON c.id = d.campamento_id
+                   WHERE cab.fecha BETWEEN %s AND %s
+                   {filtro_campamento}
+                   GROUP BY c.nombre, c.orden, cab.fecha
+                   ORDER BY c.orden, c.nombre, cab.fecha""",
+                params
+            )
+            filas = [dict(row) for row in cursor.fetchall()]
+
+    total_erradicada = sum(float(f["erradicada"] or 0) for f in filas)
+    total_mensura = sum(float(f["mensura"] or 0) for f in filas)
+
+    return {
+        "fecha_inicio": fecha_inicio.isoformat(),
+        "fecha_fin": fecha_fin.isoformat(),
+        "campamento_id": campamento_id,
+        "filas": [
+            {
+                "campamento": f["campamento"],
+                "fecha": f["fecha"].isoformat(),
+                "erradicada": float(f["erradicada"] or 0),
+                "mensura": float(f["mensura"] or 0),
+            }
+            for f in filas
+        ],
+        "total": {
+            "erradicada": total_erradicada,
+            "mensura": total_mensura,
+        },
+    }
+
+
 def obtener_reporte_por_fecha(fecha: date):
     """Busca si ya existe un reporte para esa fecha (para editar en vez de duplicar)."""
     with get_connection() as conn:
