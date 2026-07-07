@@ -35,23 +35,25 @@ async function cargarCampamentos() {
     if (!resp.ok) throw new Error('No se pudo cargar campamentos');
     campamentos = await resp.json();
 
-    campamentosGrid.innerHTML = campamentos.map(c => `
+    campamentosGrid.innerHTML = `
+      <button class="campamento-btn activo" data-id="" title="Todos los campamentos">
+        TODOS
+      </button>
+    ` + campamentos.map(c => `
       <button class="campamento-btn" data-id="${c.id}" title="${c.nombre}">
         ${c.nombre}
       </button>
     `).join('');
-
-    const primero = campamentos[0];
-    if (primero) seleccionarCampamento(primero.id);
   } catch (err) {
     estado.textContent = 'No se pudo cargar la lista de campamentos.';
   }
 }
 
 function seleccionarCampamento(campamentoId) {
-  campamentoSeleccionado = Number(campamentoId);
+  campamentoSeleccionado = campamentoId ? Number(campamentoId) : null;
   document.querySelectorAll('.campamento-btn').forEach(btn => {
-    btn.classList.toggle('activo', Number(btn.dataset.id) === campamentoSeleccionado);
+    const valor = btn.dataset.id ? Number(btn.dataset.id) : null;
+    btn.classList.toggle('activo', valor === campamentoSeleccionado);
   });
 }
 
@@ -75,11 +77,6 @@ async function consultar() {
     return;
   }
 
-  if (!campamentoSeleccionado) {
-    estado.textContent = 'Seleccione un campamento.';
-    return;
-  }
-
   estado.textContent = 'Consultando...';
   cuerpoTabla.innerHTML = '<tr><td colspan="4" class="vacio">Cargando...</td></tr>';
   pieTabla.innerHTML = '';
@@ -87,8 +84,10 @@ async function consultar() {
   const params = new URLSearchParams({
     fecha_inicio: fechaInicio.value,
     fecha_fin: fechaFin.value,
-    campamento_id: campamentoSeleccionado,
   });
+  if (campamentoSeleccionado) {
+    params.set('campamento_id', campamentoSeleccionado);
+  }
 
   try {
     const resp = await fetch(`/api/resumen-campamento-rango?${params.toString()}`);
