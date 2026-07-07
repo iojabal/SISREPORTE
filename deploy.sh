@@ -7,6 +7,12 @@ set -euo pipefail
 COMPOSE="docker compose"
 OLD_CONTAINER="campamentos"
 
+if [[ -d .git ]]; then
+    echo "==> -1. Pulling latest code from git"
+    git pull
+    echo "    OK"
+fi
+
 echo "==> 0. Normalizing line endings (Windows CRLF breaks .env parsing)"
 for f in .env docker-compose.yml nginx/nginx.conf setup_database.sql; do
     if [[ -f "$f" ]] && grep -qU $'\r' "$f" 2>/dev/null; then

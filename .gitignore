@@ -1,0 +1,8 @@
+# Secretos — nunca subir contraseñas de BD al repo
+.env
+
+__pycache__/
+*.pyc
+
+# Datos de Postgres si alguna vez se montan localmente fuera de Docker
+postgres_data/
