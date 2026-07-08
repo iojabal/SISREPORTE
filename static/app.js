@@ -78,7 +78,6 @@ tbody.addEventListener('click', (e) => {
   if (e.target.closest('.btn-fila')) {
     setTimeout(() => {
       actualizarTotales();
-      actualizarOpcionesCampamento();
     }, 0);
   }
 });
@@ -114,7 +113,6 @@ function crearFilaCampamento(campamentoId) {
   const inputM = tr.querySelector('.f-mensura');
   const inputTotalM = tr.querySelector('.f-total-mensura');
   inputM.addEventListener('input', () => { inputTotalM.value = inputM.value; });
-  tr.querySelector('.f-campamento').addEventListener('change', actualizarOpcionesCampamento);
 
   return tr;
 }
@@ -128,21 +126,6 @@ function opcionesCampamento(campamentoIdSeleccionado) {
   return `<option value="">— Seleccionar —</option>${opciones}`;
 }
 
-// Evita elegir el mismo campamento en más de una fila: deshabilita en cada
-// select los campamentos ya elegidos en OTRAS filas.
-function actualizarOpcionesCampamento() {
-  const selects = Array.from(tbody.querySelectorAll('.f-campamento'));
-  const elegidos = new Set(selects.map(s => s.value).filter(Boolean));
-
-  selects.forEach(select => {
-    const propio = select.value;
-    Array.from(select.options).forEach(opt => {
-      if (!opt.value) return; // "— Seleccionar —" siempre habilitada
-      opt.disabled = elegidos.has(opt.value) && opt.value !== propio;
-    });
-  });
-}
-
 function opcionesFederacion() {
   const opciones = federaciones.map(nombre => `<option value="${nombre}">${nombre}</option>`).join('');
   return `<option value="">— Seleccionar —</option>${opciones}`;
@@ -152,7 +135,6 @@ function agregarFilaCampamento() {
   const tr = crearFilaCampamento(null);
   tbody.appendChild(tr);
   tr.querySelector('.f-campamento').focus();
-  actualizarOpcionesCampamento();
   actualizarTotales();
 }
 
