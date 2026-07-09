@@ -44,6 +44,10 @@ const CAMPOS_TOTAL = [
   'f-alm', 'f-errad', 'f-lotes', 'f-parcelas',
 ];
 
+function redondear4(n) {
+  return Math.round((n + Number.EPSILON) * 10000) / 10000;
+}
+
 function actualizarTotales() {
   const totales = {};
   CAMPOS_TOTAL.forEach(campo => { totales[campo] = 0; });
@@ -54,6 +58,8 @@ function actualizarTotales() {
       totales[campo] += input ? (parseFloat(input.value) || 0) : 0;
     });
   });
+
+  CAMPOS_TOTAL.forEach(campo => { totales[campo] = redondear4(totales[campo]); });
 
   const pie = document.getElementById('pieTabla');
   pie.innerHTML = `

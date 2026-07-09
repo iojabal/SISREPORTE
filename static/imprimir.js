@@ -69,14 +69,14 @@ async function construirReporteCampamentos(fecha) {
         <tfoot>
           <tr>
             <td colspan="4">TOTAL</td>
-            <td>${totales.erradicado || ''}</td>
-            <td>${totales.total_erradicado || ''}</td>
-            <td>${totales.mensura || ''}</td>
-            <td>${totales.total_mensura || ''}</td>
-            <td>${totales.alm || ''}</td>
-            <td>${totales.errad || ''}</td>
-            <td>${totales.lotes || ''}</td>
-            <td>${totales.parcelas || ''}</td>
+            <td>${formatearNum(totales.erradicado)}</td>
+            <td>${formatearNum(totales.total_erradicado)}</td>
+            <td>${formatearNum(totales.mensura)}</td>
+            <td>${formatearNum(totales.total_mensura)}</td>
+            <td>${formatearNum(totales.alm, 0)}</td>
+            <td>${formatearNum(totales.errad, 0)}</td>
+            <td>${formatearNum(totales.lotes, 0)}</td>
+            <td>${formatearNum(totales.parcelas, 0)}</td>
             <td colspan="2"></td>
           </tr>
         </tfoot>
