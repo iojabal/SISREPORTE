@@ -84,7 +84,7 @@ async function cargar() {
     const r = await resp.json();
     fechaActual = r.fecha;
 
-    const fecha = new Date(r.fecha).toLocaleDateString('es-BO', { day: '2-digit', month: 'long', year: 'numeric' });
+    const fecha = new Date(r.fecha + 'T00:00:00').toLocaleDateString('es-BO', { day: '2-digit', month: 'long', year: 'numeric' });
     document.getElementById('meta').innerHTML = `
       <div><span>Fecha</span>${fecha}</div>
       <div><span>Responsable</span>${r.responsable || '—'}</div>

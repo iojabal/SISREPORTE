@@ -317,8 +317,8 @@ function limpiarFiltroHistorial() {
 }
 
 function formatearFecha(fechaStr) {
-  const f = new Date(fechaStr);
-  return f.toLocaleDateString('es-BO', { day: '2-digit', month: '2-digit', year: 'numeric' });
+  const [anio, mes, dia] = fechaStr.split('-');
+  return `${dia}/${mes}/${anio}`;
 }
 
 // ============================================================

@@ -11,7 +11,7 @@ function formatearNum(n, decimales = 4) {
 }
 
 function formatearFecha(fechaStr) {
-  return new Date(fechaStr).toLocaleDateString('es-BO', { day: '2-digit', month: 'long', year: 'numeric' });
+  return new Date(fechaStr + 'T00:00:00').toLocaleDateString('es-BO', { day: '2-digit', month: 'long', year: 'numeric' });
 }
 
 // ============================================================
